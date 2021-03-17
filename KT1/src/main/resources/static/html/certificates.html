@@ -41,39 +41,7 @@
     color: #fff;
     }
     
-    .navbar {
-    display: flex;
-    position: absolute;
-    background: rgb(24, 23, 23);
-    top: 0;
-    left: 0;
-    right: 0;
-    color: #fff;
-    justify-content: space-between;
-    z-index: 1;
-    padding: 1rem;
-    height: 2.8rem;
-}
 
-.navbar ul {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 2rem;
-    list-style: none;
-}
-
-.navbar ul a {
-    text-decoration: none;
-    color: #fff;
-    margin: 0 1rem;
-    padding: 0.75rem;
-}
-
-.navbar ul a:hover {
-    background: #853b1e;
-    border-radius: 5px;
-}
 .invalid_1 {
     color: rgb(165, 11, 11);
     padding: 0;
@@ -95,13 +63,14 @@
 
 <body >
 <div class="container_1">
-<div class="navbar">
-
-	<button type="button" class="navbar ul a" id="addCertificate"  >ADD CERTIFICATE</button>
-  	<button type="button" class="navbar ul a" id="showAll" style="left:150px">SHOW ALL CERTIFICATES</button>
+<div style="background-color:black">
+	<button type="button" class="button btn-dark "  id="addCertificate"  >ADD CERTIFICATE</button>
+  	<button type="button" class="button btn-dark" id="showAll" >SHOW ALL CERTIFICATES</button>
 	<p id="error" class="invalid_1">
 	<p id="error1" class="invalid_1">
 	<p id="success" class="success_1">
+</div>
+<div id="showData">
 </div>
 	
 </div>

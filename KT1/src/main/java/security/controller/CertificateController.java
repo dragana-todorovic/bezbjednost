@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import security.model.User;
 import security.security.auth.JwtAuthenticationRequest;
+import security.service.CertificateService;
 import security.service.UserService;
 
 // Primer kontrolera cijim metodama mogu pristupiti samo autorizovani korisnici
@@ -26,12 +27,16 @@ public class CertificateController {
 
 	@Autowired
 	private UserService userService;
+	
+	 @Autowired
+	 private CertificateService certificateService;
 
-	@GetMapping("/addNew")
+	@GetMapping("/getAll")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<User> user(Principal user) {
-		User u = this.userService.findOneByEmail(user.getName());
-		return ResponseEntity.ok(u);
+	public ResponseEntity<List<String>> user() {
+		return ResponseEntity.ok(this.certificateService.getAllCertificates());
 	}
+	
+
 	
 }
