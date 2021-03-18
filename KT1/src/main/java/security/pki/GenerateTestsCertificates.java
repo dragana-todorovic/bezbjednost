@@ -7,15 +7,17 @@ import java.security.Security;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import security.pki.certificates.CertificateGenerator;
+import security.pki.data.IssuerData;
+import security.pki.data.SubjectData;
+import security.pki.keystores.KeyStoreWriter;
+
 import java.security.*;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import security.pki.certificates.CertificateGenerator;
-import security.pki.data.IssuerData;
-import security.pki.data.SubjectData;
-import security.pki.keystores.KeyStoreWriter;
 
 public class GenerateTestsCertificates {
 	

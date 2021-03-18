@@ -25,26 +25,32 @@ let iscrtajCertifikate = function(data) {
 			<tr><td>VALID FROM:<td><td>`+pomocna[1].split(" ")[1] +("-")+ pomocna[1].split(" ")[2]+("-")+pomocna[1].split(" ")[5] +`</td></tr>
 			<tr><td>VALID TO:<td><td>`+pomocna[2].split(" ")[1] +("-")+ pomocna[2].split(" ")[2]+("-")+pomocna[2].split(" ")[5]+`</td></tr>
 			<tr><td>SPECIALITY:<td><td>`+pomocna[3]+`</td></tr>
-			<tr><td>UID:<td><td>`+pomocna[0].split("(")[1].split(")")[0]+`</td></tr>
-			</table></div>`;
+			<tr><td>UID:<td><td>`+pomocna[0].split("(")[1].split(")")[0].split("=")[1]+`</td></tr>
+			`;
+			temp+=`<tr><td style = "text-align:center;">
+		         <input name="pull" id="btnPull` + pomocna[0].split("(")[1].split(")")[0].split("=")[1] + `" class="btn btn-dark" type="button" value="PULL"></br>
+			                </td></tr></table></div>`;
+			
 		
 		}
-		
 	    
 		$('#showData').html(temp);	
 		
+		$("input:button[name=pull]").click(function () {
+			console.log(this.id)
+			customAjax({
+		        method:'POST',
+		        url:'/certificate/pullCertificate/' + this.id,
+		        contentType: 'application/json',
+		        success: function(){
+					//location.href = "certificates.html";
+				},
+				error: function(message){
+					alert("Neuspjesno")
+				}
+		            });
+
+			});
+		
 
 };
-function formatDate(date) {
-    var d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
-
-    return [year, month, day].join('-');
-}
