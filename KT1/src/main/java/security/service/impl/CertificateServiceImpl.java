@@ -27,12 +27,8 @@ public class CertificateServiceImpl implements CertificateService {
 	KeyStoreReader keyStoreReader = new KeyStoreReader();
 	
 	public List<String> getAllCertificates() {
-        List<X509Certificate> certificates = keyStoreReader.getX509Certificates("./src/main/resources/keystores/root.jks", "12345");
-        List<X509Certificate> certificates1 = keyStoreReader.getX509Certificates("./src/main/resources/keystores/intermediate.jks", "12345");
-        List<X509Certificate> certificates2 = keyStoreReader.getX509Certificates("./src/main/resources/keystores/endEntity.jks", "12345");
-
-        certificates.addAll(certificates1);
-        certificates.addAll(certificates2);
+		
+		List<X509Certificate>certificates=getCertificates();
 
         List<String> subjectData = new ArrayList<>();
         for (X509Certificate c : certificates)
@@ -54,12 +50,7 @@ public class CertificateServiceImpl implements CertificateService {
 	@Override
 	public void pullCertificate(String uid) throws NoSuchProviderException, KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException{
 
-	        List<X509Certificate> certificates = keyStoreReader.getX509Certificates("./src/main/resources/keystores/root.jks", "12345");
-	        List<X509Certificate> certificates1 = keyStoreReader.getX509Certificates("./src/main/resources/keystores/intermediate.jks", "12345");
-	        List<X509Certificate> certificates2 = keyStoreReader.getX509Certificates("./src/main/resources/keystores/endEntity.jks", "12345");
-
-	        certificates.addAll(certificates1);
-	        certificates.addAll(certificates2);
+			List<X509Certificate>certificates=getCertificates();
 
 	        Certificate cert = null;
 	        String certificateUID = "";
@@ -99,6 +90,78 @@ public class CertificateServiceImpl implements CertificateService {
 		
 	}
 	
+
+	@Override
+	public Boolean checkCertificate(String uid) throws NoSuchProviderException, KeyStoreException, IOException,
+			CertificateException, NoSuchAlgorithmException {
+		   	
+			Boolean isValid = true; 
+			List<X509Certificate>certificates=getCertificates();	       
+
+	        X509Certificate x509Certificate = null;
+
+
+
+	        String uidIssuar = "";
+	        String uidSubject = "";
+	        uidSubject = uid;
+
+	        boolean endWhile = false;
+	        do {
+	            for (X509Certificate certificate : certificates)
+	            {
+	           
+	                if(certificate.getSubjectX500Principal().getName().split(",")[0].split("\\=")[1].equals(uidSubject))
+	                {	                   
+	                    x509Certificate = certificate;
+	                    if(new Date().compareTo(x509Certificate.getNotAfter()) == 1) {
+	                        pullCertificate(uid);
+	                        System.out.println("usaoooo");
+	                        isValid = false;
+	                    }
+	                    
+	                    uidIssuar = x509Certificate.getIssuerX500Principal().getName().split(",")[0];
+	                    System.out.println("uidIsuuar"+uidIssuar);
+	                }
+	            }
+	          
+
+	            String allPulledFromFile = readFromFileAllPulledCertificates();
+
+	          
+	            try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream("./src/main/resources/keystores/ocsp.txt"))) {
+
+	                if (allPulledFromFile != "") {
+	                    String certs[] = allPulledFromFile.split("KRAJ");
+
+	                    for (String s : certs) {
+	                        String str[] = s.split(" ");
+	                        for (int i = 0; i < str.length; i++)
+
+	                            if (str[i].split("=")[0].equals("UID")) {
+	                                if (str[i].split("=")[1].split(",")[0].equals(uidSubject)) {
+	                                    isValid = false;
+	                                    break;
+	                                }
+	                                break;
+	                            }
+	                    }
+	                    bufferedOutputStream.write(allPulledFromFile.getBytes());
+	                }
+
+	            } catch (IOException e) {
+	                e.printStackTrace();
+	            }
+
+	            if(uidSubject.equals(uidIssuar.split("\\=")[1]))
+	                endWhile = true;
+
+	            uidSubject = uidIssuar.split("\\=")[1];
+	        } while(endWhile != true);	       
+
+	        return isValid;
+		
+	}
 	public String readFromFileAllPulledCertificates() throws IOException {
 		String allPulledFromFile = "";
 		try(BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream("./src/main/resources/keystores/ocsp.txt"))) {
@@ -115,19 +178,31 @@ public class CertificateServiceImpl implements CertificateService {
 	
 	public Boolean doesPulledCertificateAlreadyExistInFile(String allPulledFromFile, String uid) {
 		 String certs[] = allPulledFromFile.split("KRAJ");
-
          Boolean n = false;
          for(String s : certs){
              String str[] = s.split(" ");
              for (int i=0; i < str.length; i++)
-
                  if (str[i].split("=")[0].equals("UID"))
                  {
                      if ( str[i].split("=")[1].split(",")[0].equals(uid)){
-                         return true;
+                         n = true;
+                         break;
                      }
+                     break;
                  }
 	}
-         return false;
-}}
+         return n;
+}
+	  
+	public List<X509Certificate> getCertificates() {
+		 List<X509Certificate> certificates = keyStoreReader.getX509Certificates("./src/main/resources/keystores/root.jks", "12345");
+	        List<X509Certificate> certificates1 = keyStoreReader.getX509Certificates("./src/main/resources/keystores/intermediate.jks", "12345");
+	        List<X509Certificate> certificates2 = keyStoreReader.getX509Certificates("./src/main/resources/keystores/endEntity.jks", "12345");
+
+	        certificates.addAll(certificates1);
+	        certificates.addAll(certificates2);
+		
+	        return certificates;		
+	}	
+}
 

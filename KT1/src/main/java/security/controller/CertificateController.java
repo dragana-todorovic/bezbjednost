@@ -51,6 +51,12 @@ public class CertificateController {
 		this.certificateService.pullCertificate(uid);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	@PostMapping("/checkCertificate/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Boolean> check(@PathVariable String id) throws NoSuchProviderException, KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+		String uid = id.substring(8);
+		return new ResponseEntity<Boolean>(this.certificateService.checkCertificate(uid),HttpStatus.OK);
+	}
 	
 
 	

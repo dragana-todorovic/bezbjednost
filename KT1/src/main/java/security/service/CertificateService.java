@@ -11,4 +11,5 @@ public interface CertificateService {
 	
 	List<String> getAllCertificates();
 	void pullCertificate(String uid) throws NoSuchProviderException, KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException;
+	Boolean checkCertificate(String uid) throws NoSuchProviderException, KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException;
 }

@@ -11,6 +11,9 @@ $(document).ready(function() {
             });
 
 	});
+	$('#logout').on('click', function(e){
+		location.href = "login.html";
+		});
 })
 let iscrtajCertifikate = function(data) {
 	let temp='';
@@ -29,7 +32,14 @@ let iscrtajCertifikate = function(data) {
 			`;
 			temp+=`<tr><td style = "text-align:center;">
 		         <input name="pull" id="btnPull` + pomocna[0].split("(")[1].split(")")[0].split("=")[1] + `" class="btn btn-dark" type="button" value="PULL"></br>
-			                </td></tr></table></div>`;
+			                </td><td style = "text-align:center;">
+		         <input name="check" id="btnCheck` + pomocna[0].split("(")[1].split(")")[0].split("=")[1] + `" class="btn btn-dark" type="button" value="CHECK"></br>
+			                </td></tr>
+			
+				<tr><td></td><td style="text-align:center" ><br><p style="text-align:center"  id="isValid` + pomocna[0].split("(")[1].split(")")[0].split("=")[1] + `"></p></td></tr>
+				</table>
+				
+				</div>`;
 			
 		
 		}
@@ -43,7 +53,35 @@ let iscrtajCertifikate = function(data) {
 		        url:'/certificate/pullCertificate/' + this.id,
 		        contentType: 'application/json',
 		        success: function(){
-					//location.href = "certificates.html";
+					location.href = "certificates.html";
+				},
+				error: function(message){
+					alert("Neuspjesno")
+				}
+		            });
+
+			});
+			$("input:button[name=check]").click(function () {
+			id = this.id;
+			id = id.substring(8);
+			var text = "isValid"+id;
+			customAjax({
+		        method:'POST',
+		        url:'/certificate/checkCertificate/' + this.id,
+		        contentType: 'application/json',
+		        success: function(data){
+				var pom = document.getElementById(text);
+				
+					if(data==true){		
+						pom.innerHTML = "Valid";	
+						pom.style.color = '#7CFC00';
+													
+					}
+					else{
+						pom.innerHTML = "Not valid";
+						pom.style.color = '#ff0000';	
+					}
+					
 				},
 				error: function(message){
 					alert("Neuspjesno")
