@@ -10,12 +10,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+
+import security.model.StringResponse;
 import security.pki.keystores.KeyStoreReader;
 import security.service.CertificateService;
 
@@ -203,6 +206,32 @@ public class CertificateServiceImpl implements CertificateService {
 	        certificates.addAll(certificates2);
 		
 	        return certificates;		
+	}
+
+	@Override
+	public StringResponse downloadCertificate(String uid) throws NoSuchProviderException, KeyStoreException, IOException,
+			CertificateException, NoSuchAlgorithmException {
+		StringResponse response = new StringResponse();
+		List<X509Certificate> certificates = getCertificates();
+		
+		String certificateUID = "";
+		
+		Certificate cert = null;
+		
+		 for (X509Certificate certificate : certificates)
+	        {
+	        	certificateUID = certificate.getSubjectX500Principal().getName().split(",")[0].split("\\=")[1];
+	        	
+	            if(certificateUID.equals(uid))
+	            {
+	            	if (certificate != null)
+	            		
+	    	            cert = (X509Certificate) certificate;
+	            }
+	        }
+		 String encodedCert = Base64.getEncoder().encodeToString((cert.getEncoded()));
+		 response.setResponse(encodedCert);
+		 return response;
 	}	
 }
 
