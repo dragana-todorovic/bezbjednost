@@ -1,5 +1,6 @@
 package security.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bouncycastle.cert.CertIOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,11 +22,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import security.model.CertificateForAdding;
 import security.model.StringResponse;
 import security.model.User;
 import security.security.auth.JwtAuthenticationRequest;
@@ -47,6 +51,11 @@ public class CertificateController {
 	public ResponseEntity<List<String>> getAll() {
 		return ResponseEntity.ok(this.certificateService.getAllCertificates());
 	}
+	@GetMapping("/successLoad")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> sucessLoad() {
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 	
 	@PostMapping("/pullCertificate/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
@@ -67,6 +76,14 @@ public class CertificateController {
 	public ResponseEntity<StringResponse> download(@PathVariable String id) throws NoSuchProviderException, KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
 		String uid = id.substring(11);
 		return new ResponseEntity<StringResponse>(this.certificateService.downloadCertificate(uid),HttpStatus.OK);
+	}
+	
+	
+	@PostMapping("/addCertificate")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> addCertificate(@RequestBody CertificateForAdding certificate) throws CertIOException, KeyStoreException, NoSuchProviderException, FileNotFoundException, NoSuchAlgorithmException, CertificateException, IOException  {
+		this.certificateService.addCertificate(certificate);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 

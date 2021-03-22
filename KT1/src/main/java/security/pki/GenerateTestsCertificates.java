@@ -6,6 +6,7 @@ import java.security.Security;
 
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import security.pki.certificates.CertificateGenerator;
@@ -25,15 +26,18 @@ public class GenerateTestsCertificates {
 	        Security.addProvider(new BouncyCastleProvider());
 	    }
 
-	    public void generate() {
+	    public void generate() throws CertIOException {
 	        SubjectData subjectData = generateSubjectDataRoot();
 
 	        KeyPair keyPairIssuer = generateKeyPair();
 	        IssuerData issuerData = generateIssuerDataRoot(keyPairIssuer.getPrivate());
-
+	        IssuerData issuerData1 = generateIssuerDataCA(keyPairIssuer.getPrivate());
+	        
 	        CertificateGenerator certificateGenerator = new CertificateGenerator();
 	        X509Certificate x509Certificate = certificateGenerator.generateCertificate(subjectData, issuerData);
-
+	       
+	        
+	        
 	        KeyStoreWriter keyStore = new KeyStoreWriter();
 	        KeyStoreWriter keyStore1 = new KeyStoreWriter();
 	        KeyStoreWriter keyStore2 = new KeyStoreWriter();
@@ -61,11 +65,10 @@ public class GenerateTestsCertificates {
 
 	        SubjectData subjectData2 = generateSubjectDataEndEntity();
 	        CertificateGenerator certificateGenerator2 = new CertificateGenerator();
-	        X509Certificate x509Certificate3 = certificateGenerator2.generateCertificate(subjectData2, issuerData);
+	        X509Certificate x509Certificate3 = certificateGenerator2.generateCertificate(subjectData2, issuerData1);
 
 	        keyStore2.write("end-entity", keyPairIssuer.getPrivate(), password, x509Certificate3);
 	        keyStore2.saveKeyStore("./src/main/resources/keystores/endEntity.jks", password);
-
 
 //	        System.out.println(x509Certificate);
 //	        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -90,6 +93,7 @@ public class GenerateTestsCertificates {
 	            x500NameBuilder.addRDN(BCStyle.E, "dragana.todorovic@gmail.com");
 	            x500NameBuilder.addRDN(BCStyle.C, "CA");
 	            x500NameBuilder.addRDN(BCStyle.UID, "0002");
+	            
 
 	            return new SubjectData(keyPairSubject.getPublic(), x500NameBuilder.build(), serialNumber, startDate, endDate);
 	        } catch (ParseException e) {
@@ -113,6 +117,8 @@ public class GenerateTestsCertificates {
 	            x500NameBuilder.addRDN(BCStyle.E, "maja.tepavcevic@gmail.com");
 	            x500NameBuilder.addRDN(BCStyle.C, "End-entity");
 	            x500NameBuilder.addRDN(BCStyle.UID, "0003");
+	            
+	            
 
 	            return new SubjectData(keyPairSubject.getPublic(), x500NameBuilder.build(), serialNumber, startDate, endDate);
 	        } catch (ParseException e) {
@@ -129,6 +135,16 @@ public class GenerateTestsCertificates {
 	        x500NameBuilder.addRDN(BCStyle.E, "pera.peric@gmail.com");
 	        x500NameBuilder.addRDN(BCStyle.C, "Root");
 	        x500NameBuilder.addRDN(BCStyle.UID, "0001");
+	        return new IssuerData(privateKey, x500NameBuilder.build());
+	    }
+	    public IssuerData generateIssuerDataCA(PrivateKey privateKey) {
+	        X500NameBuilder x500NameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
+	        x500NameBuilder.addRDN(BCStyle.CN, "Dragana Todorovic");
+	        x500NameBuilder.addRDN(BCStyle.SURNAME, "Todorovic");
+	        x500NameBuilder.addRDN(BCStyle.GIVENNAME, "Dragana");
+	        x500NameBuilder.addRDN(BCStyle.E, "dragana.todorovic@gmail.com");
+	        x500NameBuilder.addRDN(BCStyle.C, "CA");
+	        x500NameBuilder.addRDN(BCStyle.UID, "0002");
 	        return new IssuerData(privateKey, x500NameBuilder.build());
 	    }
 
@@ -170,7 +186,7 @@ public class GenerateTestsCertificates {
 	        return null;
 	    }
 
-	    public static void main(String[] args) {
+	    public static void main(String[] args) throws CertIOException {
 	        GenerateTestsCertificates generateRootCertificate = new GenerateTestsCertificates();
 	        generateRootCertificate.generate();
 	    }

@@ -2,6 +2,11 @@ package security.pki.certificates;
 
 import security.pki.data.IssuerData;
 import security.pki.data.SubjectData;
+
+import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -18,7 +23,7 @@ import java.security.cert.X509Certificate;
 public class CertificateGenerator {
     public CertificateGenerator() {}
 
-    public X509Certificate generateCertificate(SubjectData subjectData, IssuerData issuerData) {
+    public X509Certificate generateCertificate(SubjectData subjectData, IssuerData issuerData) throws CertIOException {
         try {
             //Posto klasa za generisanje sertifiakta ne moze da primi direktno privatni kljuc pravi se builder za objekat
             //Ovaj objekat sadrzi privatni kljuc izdavaoca sertifikata i koristiti se za potpisivanje sertifikata
@@ -37,14 +42,22 @@ public class CertificateGenerator {
                     subjectData.getEndDate(),
                     subjectData.getX500Name(),
                     subjectData.getPublicKey());
+            
+            KeyUsage usage = new KeyUsage(KeyUsage.keyCertSign
+                    | KeyUsage.digitalSignature | KeyUsage.keyEncipherment
+                    | KeyUsage.dataEncipherment | KeyUsage.cRLSign);
+            certGen.addExtension(Extension.keyUsage, false, usage);
+            certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(0));
+   
+            
             //Generise se sertifikat
             X509CertificateHolder certHolder = certGen.build(contentSigner);
-
             //Builder generise sertifikat kao objekat klase X509CertificateHolder
             //Nakon toga je potrebno certHolder konvertovati u sertifikat, za sta se koristi certConverter
             JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
             certConverter = certConverter.setProvider("BC");
-
+        
+            
             //Konvertuje objekat u sertifikat
             return certConverter.getCertificate(certHolder);
         } catch (CertificateEncodingException e) {

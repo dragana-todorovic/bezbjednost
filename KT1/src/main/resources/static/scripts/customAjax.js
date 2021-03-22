@@ -33,6 +33,7 @@ function customAjax(params){
     beforeSend: function (xhr) {
       if(jwt != null){
         xhr.setRequestHeader("Authorization", 'Bearer '+ jwt)
+		console.log(params.data)
       }
     }
   });
