@@ -82,8 +82,8 @@ public class GenerateTestsCertificates {
 	            KeyPair keyPairSubject = generateKeyPair();
 
 	            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-	            Date startDate = simpleDateFormat.parse("21-05-2021");
-	            Date endDate = simpleDateFormat.parse("21-06-2021");
+	            Date startDate = simpleDateFormat.parse("05-02-2021");
+	            Date endDate = simpleDateFormat.parse("21-11-2021");
 	            String serialNumber = "2";
 
 	            X500NameBuilder x500NameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
@@ -106,8 +106,8 @@ public class GenerateTestsCertificates {
 	            KeyPair keyPairSubject = generateKeyPair();
 
 	            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-	            Date startDate = simpleDateFormat.parse("08-08-2021");
-	            Date endDate = simpleDateFormat.parse("09-09-2021");
+	            Date startDate = simpleDateFormat.parse("01-03-2021");
+	            Date endDate = simpleDateFormat.parse("05-10-2021");
 	            String serialNumber = "2";
 
 	            X500NameBuilder x500NameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
@@ -153,8 +153,8 @@ public class GenerateTestsCertificates {
 	            KeyPair keyPairSubject = generateKeyPair();
 
 	            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-	            Date startDate = simpleDateFormat.parse("10-10-2021");
-	            Date endDate = simpleDateFormat.parse("11-11-2021");
+	            Date startDate = simpleDateFormat.parse("01-01-2021");
+	            Date endDate = simpleDateFormat.parse("31-12-2021");
 	            String serialNumber = "1";
 
 	            X500NameBuilder x500NameBuilder = new X500NameBuilder(BCStyle.INSTANCE);

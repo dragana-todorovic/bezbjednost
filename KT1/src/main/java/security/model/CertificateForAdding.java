@@ -12,10 +12,11 @@ public class CertificateForAdding {
 	private Date validFrom;
 	private Date validTo;
 	private String alias;
+	private String issuer;
 	
 	
 	public CertificateForAdding(String fullName, String surname, String givenName, String email, String speciality,
-			String uid, Date validFrom, Date validTo, String alias) {
+			String uid, Date validFrom, Date validTo, String alias, String issuer) {
 		super();
 		this.fullName = fullName;
 		this.surname = surname;
@@ -26,16 +27,12 @@ public class CertificateForAdding {
 		this.validFrom = validFrom;
 		this.validTo = validTo;
 		this.alias = alias;
+		this.issuer = issuer;
 	}
 	public CertificateForAdding() {
 		
 	}
-	@Override
-	public String toString() {
-		return "CertificateForAdding [fullName=" + fullName + ", surname=" + surname + ", givenName=" + givenName
-				+ ", email=" + email + ", speciality=" + speciality + ", uid=" + uid + ", validFrom=" + validFrom
-				+ ", validTo=" + validTo + ", alias=" + alias + "]";
-	}
+	
 	public String getFullName() {
 		return fullName;
 	}
@@ -89,6 +86,12 @@ public class CertificateForAdding {
 	}
 	public void setAlias(String alias) {
 		this.alias = alias;
+	}
+	public String getIssuer() {
+		return issuer;
+	}
+	public void setIssuer(String issuer) {
+		this.issuer = issuer;
 	}
 	
 	

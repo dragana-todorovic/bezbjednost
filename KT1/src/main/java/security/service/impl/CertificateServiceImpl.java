@@ -22,6 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -252,7 +253,7 @@ public class CertificateServiceImpl implements CertificateService {
 	}
 
 	@Override
-	public void addCertificate(CertificateForAdding certificate) throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException, CertificateException, IOException {
+	public void addCertificate(CertificateForAdding certificate) throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException {
 		//Pravimo Subject
         GenerateTestsCertificates grc = new GenerateTestsCertificates();
         KeyPair keyPairSubject = grc.generateKeyPair();
@@ -287,52 +288,108 @@ public class CertificateServiceImpl implements CertificateService {
 
         SubjectData subjectData = new SubjectData(keyPairSubject.getPublic(), x500NameBuilder.build(), serialNumber_1, certificate.getValidFrom(), certificate.getValidTo());
         //-----------------------------------------------
-
-        //Pravimo Issuar
-        List<X509Certificate> certificates1 = keyStoreReader.getX509Certificates("./src/main/resources/keystores/root.jks", "12345");
-        List<X509Certificate> certificates2 = keyStoreReader.getX509Certificates("./src/main/resources/keystores/intermediate.jks", "12345");
-        certificates1.addAll(certificates2);
-
-        X509Certificate x509Certificate = null;
-        Certificate cert = null;
-        KeyStore ks = KeyStore.getInstance("JKS", "SUN");
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream("./src/main/resources/keystores/root.jks"));
-        ks.load(in, "12345".toCharArray());
-
-        KeyStore ks1 = KeyStore.getInstance("JKS", "SUN");
-        BufferedInputStream in1 = new BufferedInputStream(new FileInputStream("./src/main/resources/keystores/intermediate.jks"));
-        ks1.load(in1, "12345".toCharArray());
-
-
-
-        char[] password ={ '1', '2', '3', '4', '5' };
-        IssuerData issuerData = null;
-     
-
-        KeyPair kp = grc.generateKeyPair();
-      
-       x500NameBuilder.addRDN(BCStyle.CN, certificate.getFullName());
-       x500NameBuilder.addRDN(BCStyle.SURNAME, certificate.getSurname());
-       x500NameBuilder.addRDN(BCStyle.GIVENNAME, certificate.getGivenName());
-       x500NameBuilder.addRDN(BCStyle.E, certificate.getEmail());
-       x500NameBuilder.addRDN(BCStyle.C, certificate.getSpeciality());
-       x500NameBuilder.addRDN(BCStyle.UID, certificate.getUid());
-
-       issuerData = new IssuerData(kp.getPrivate(), x500NameBuilder.build());
-        
-
-        //Pravimo novi sertifikat na osnocu Subject i Issuar
         CertificateGenerator certificateGenerator2 = new CertificateGenerator();
-        X509Certificate x509Certificate2 = certificateGenerator2.generateCertificate(subjectData, issuerData);
-        //-----------------------------------------------
-
-        //Upisujemo sertifikat u KeyStore fajl
-        if(certificate.getSpeciality().equals("root")) {
-            keyStoreWriter.loadKeyStore("./src/main/resources/keystores/root.jks", password);
-            keyStoreWriter.write(certificate.getAlias(), kp.getPrivate(), password, x509Certificate2);
-            keyStoreWriter.saveKeyStore("./src/main/resources/keystores/root.jks", password);
+        char[] password ={ '1', '2', '3', '4', '5' };
+        KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+        //Pravimo Issuar
+        if(certificate.getSpeciality().equals("ca")) {
+        	List<X509Certificate> certificatesRoot = keyStoreReader.getX509Certificates("./src/main/resources/keystores/root.jks", "12345");
         
-	}
+        	 X509Certificate x509Certificate = null;
+             Certificate cert = null;
+             
+             BufferedInputStream in = new BufferedInputStream(new FileInputStream("./src/main/resources/keystores/root.jks"));
+             ks.load(in, "12345".toCharArray());
+             
+             String alias = "";
+             
+             
+             IssuerData issuerDataRoot = null;
+             
+             for (X509Certificate c : certificatesRoot)
+             {
+                 if(c.getSubjectX500Principal().toString().split(",")[0].split("=")[1].equals(certificate.getIssuer()))
+                 {
+                     x509Certificate = c;
+                 }
+             }
+         	cert = (X509Certificate)x509Certificate;
+         	alias = ks.getCertificateAlias(cert);
+         	
+         	try{
+                issuerDataRoot = keyStoreReader.readIssuerFromStore("./src/main/resources/keystores/root.jks", alias, password, password);
+               
+            }
+            catch(Exception e){
+                issuerDataRoot = null;
+            }
+         	
+             X509Certificate x509Certificate2 = certificateGenerator2.generateCertificate(subjectData, issuerDataRoot);
+        
+             PrivateKey privKey = (PrivateKey) ks.getKey(alias, password);
+             keyStoreWriter.loadKeyStore("./src/main/resources/keystores/intermediate.jks", password);
+             keyStoreWriter.write(certificate.getAlias(), privKey, password, x509Certificate2);
+             keyStoreWriter.saveKeyStore("./src/main/resources/keystores/intermediate.jks", password);
+        } else if (certificate.getSpeciality().equals("endEntity")) {
+        	
+        	List<X509Certificate> certificatesCA = keyStoreReader.getX509Certificates("./src/main/resources/keystores/intermediate.jks", "12345");
+            
+       	 	X509Certificate x509Certificate = null;
+            Certificate cert = null;
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream("./src/main/resources/keystores/intermediate.jks"));
+            ks.load(in, "12345".toCharArray());
+            
+            String alias = "";
+            IssuerData issuerDataCA = null;
+            
+            for (X509Certificate c : certificatesCA)
+            {
+                if(c.getSubjectX500Principal().toString().split(",")[0].split("=")[1].equals(certificate.getIssuer()))
+                {
+                    x509Certificate = c;
+                }
+            }
+        	cert = (X509Certificate)x509Certificate;
+        	alias = ks.getCertificateAlias(cert);
+        	
+        	try{
+               issuerDataCA = keyStoreReader.readIssuerFromStore("./src/main/resources/keystores/intermediate.jks", alias, password, password);
+              
+           }
+           catch(Exception e){
+               issuerDataCA = null;
+           }
+        	
+        	
+            X509Certificate x509Certificate2 = certificateGenerator2.generateCertificate(subjectData, issuerDataCA);
+       
+            PrivateKey privKey = (PrivateKey) ks.getKey(alias, password);
+            keyStoreWriter.loadKeyStore("./src/main/resources/keystores/endEntity.jks", password);
+            keyStoreWriter.write(certificate.getAlias(), privKey, password, x509Certificate2);
+            keyStoreWriter.saveKeyStore("./src/main/resources/keystores/endEntity.jks", password);
+        	
+        }
+        
+        
+        else {
+           IssuerData issuerDataRoot = null;
+           KeyPair keyPair = grc.generateKeyPair();
+	       x500NameBuilder.addRDN(BCStyle.CN, certificate.getFullName());
+	       x500NameBuilder.addRDN(BCStyle.SURNAME, certificate.getSurname());
+	       x500NameBuilder.addRDN(BCStyle.GIVENNAME, certificate.getGivenName());
+	       x500NameBuilder.addRDN(BCStyle.E, certificate.getEmail());
+	       x500NameBuilder.addRDN(BCStyle.C, certificate.getSpeciality());
+	       x500NameBuilder.addRDN(BCStyle.UID, certificate.getUid());
+
+	       issuerDataRoot = new IssuerData(keyPair.getPrivate(), x500NameBuilder.build());
+	       
+	       X509Certificate x509Certificate2 = certificateGenerator2.generateCertificate(subjectData, issuerDataRoot);
+	       
+	       keyStoreWriter.loadKeyStore("./src/main/resources/keystores/root.jks", password);
+           keyStoreWriter.write(certificate.getAlias(), keyPair.getPrivate(), password, x509Certificate2);
+           keyStoreWriter.saveKeyStore("./src/main/resources/keystores/root.jks", password);
+        }
+        
 	}     
 }
 
