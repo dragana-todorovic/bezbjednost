@@ -34,7 +34,7 @@ $(document).ready(function(e){
 	  		btnLogin.disabled = false
 	  	}
 		if(!validatePassword(input_password.val())) {
-			btnLogin.disabled = true
+			//btnLogin.disabled = true
 			$(this).addClass(`alert-danger`);
 	  		$('#id_password').css('border-color', 'red');
 	  		$("#errorPassword").text("Password must have at least 8 characters, lower case, upper case, digit, special character!")

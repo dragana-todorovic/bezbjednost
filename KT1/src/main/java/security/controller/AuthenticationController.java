@@ -43,6 +43,7 @@ import security.model.CertificateForAdding;
 import security.model.ChangePassword;
 import security.model.StringResponse;
 import security.model.User;
+import security.model.UserRequest;
 import security.model.UserTokenState;
 import security.security.TokenUtils;
 import security.security.auth.JwtAuthenticationRequest;
@@ -108,6 +109,18 @@ public class AuthenticationController {
         }
         
 	}
+	@PostMapping("/register")
+	public ResponseEntity<User> addUser(@RequestBody UserRequest userRequest, UriComponentsBuilder ucBuilder) {
+		User existUser = this.userService.findOneByEmail(userRequest.getEmail());
+		if (existUser != null) {
+			throw new ResourceConflictException(userRequest.getId(), "Username already exists");
+		}
+		User user = this.userService.save(userRequest);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(ucBuilder.path("/api/user/{userId}").buildAndExpand(user.getId()).toUri());
+		return new ResponseEntity<>(user, HttpStatus.CREATED);
+	}
+
 	
 	@GetMapping("/forgotPassword")
 	public ResponseEntity<?> forgotPassword(String email) throws MailException, MessagingException{

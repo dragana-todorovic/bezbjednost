@@ -23,6 +23,6 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
     
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/", "/html/login.html");
+        registry.addRedirectViewController("/", "/html/homepage.html");
     }
 }

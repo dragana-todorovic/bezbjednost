@@ -47,7 +47,10 @@ public class User implements UserDetails {
 
     @Column(name = "email")
     private String email;
-
+    
+    @Column(name = "enabled")
+    private boolean enabled;
+    
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
@@ -106,8 +109,13 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
 
 
     @JsonIgnore
@@ -128,16 +136,17 @@ public class User implements UserDetails {
         return true;
     }
 
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return email;
-	}
 
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", email=" + email + ", authorities=" + authorities + "]";
+	}
+
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return email;
 	}
 
 }
