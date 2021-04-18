@@ -77,6 +77,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 	//svim korisnicima dopusti da pristupe putanjama /auth/login
                 	.antMatchers("/auth/login").permitAll()
+                	.antMatchers("/auth/forgotPassword/**").permitAll()
+                	.antMatchers("/auth/changePassword").permitAll()
                 	.antMatchers("/html/login.html").permitAll()
                 	.antMatchers("/html/certificates.html").permitAll()
                 	.antMatchers("/").permitAll()
@@ -93,7 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         // TokenAuthenticationFilter ce ignorisati sve ispod navedene putanje
-
+    
         web.ignoring().antMatchers(
                 HttpMethod.GET,
                 "/scripts/login.js",
@@ -101,6 +103,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/scripts/bootstrap-datetimepicker.js",
                 "/scripts/pkiAdminScript.js",
                 "/html/pkiAdmin.html",
+                "/html/forgotPassword.html",
+                "/html/changePassword.html",
                 "/scripts/*",
                 "/css/datetimepicker.css"
             );

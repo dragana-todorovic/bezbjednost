@@ -134,4 +134,10 @@ public class User implements UserDetails {
 		return email;
 	}
 
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", email=" + email + ", authorities=" + authorities + "]";
+	}
+
 }

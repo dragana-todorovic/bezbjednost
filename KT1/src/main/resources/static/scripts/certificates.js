@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	
+	
 	$('#showAll').on('click', function(e){
 	customAjax({
         method:'GET',
@@ -12,6 +13,9 @@ $(document).ready(function() {
 
 	});
 	$('#logout').on('click', function(e){
+		localStorage.removeItem('jwt')
+		
+		
 		location.href = "login.html";
 		});
 		

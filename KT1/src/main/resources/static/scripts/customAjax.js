@@ -19,7 +19,7 @@ function customAjax(params){
       }
       if(xhr.status == 401){
         //localStorage.removeItem('jwt');
-        //window.location.href = 'login.html';
+        window.location.href = 'login.html';
       }
       if(params.error != null){
         params.error();
