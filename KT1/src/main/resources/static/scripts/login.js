@@ -5,8 +5,6 @@ var button_login;
 var p_log;
 
 $(document).ready(function(e){
-  //localStorage.removeItem('jwt');
-
   input_email = $('#id_email');
   input_password = $('#id_password');
   var btnLogin = document.getElementById("id_button")
@@ -68,7 +66,6 @@ $(document).ready(function(e){
     	}
       },
       error: function(){
-    	  console.log("hahahhaha")
         p_log.text('Wrong credentials');
       }
     });

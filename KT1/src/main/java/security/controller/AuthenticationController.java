@@ -29,6 +29,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,14 +82,16 @@ public class AuthenticationController {
         Matcher matcherPassword = patternPassword.matcher(authenticationRequest.getPassword());
         
         if(matcherEmail.matches() && matcherPassword.matches()) {
-        	
-        
-			try {User u = userService.findOneByEmailAndPassword(authenticationRequest.getEmail(), authenticationRequest.getPassword());
-        	
+        User u = userService.findOneByEmailAndPassword(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+        if(u==null) {
+        	return ResponseEntity.notFound().build();
+        }
+			/*try {User u = userService.findOneByEmailAndPassword(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+		
 			} catch(NullPointerException e) {
 				System.out.println("USAO U ERROR ZA NULL");
         		return ResponseEntity.notFound().build();
-			}
+			}*/
        
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(),
@@ -105,6 +108,7 @@ public class AuthenticationController {
 			// Vrati token kao odgovor na uspesnu autentifikaciju
 			return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
         } else {
+        	System.out.println("Usao u else");
         	return ResponseEntity.badRequest().body(null);
         }
         
@@ -124,17 +128,39 @@ public class AuthenticationController {
 	
 	@GetMapping("/forgotPassword")
 	public ResponseEntity<?> forgotPassword(String email) throws MailException, MessagingException{
-		userService.sendEmailForRecoveryOfAccount(email);
-		return new ResponseEntity<>(HttpStatus.OK);
+		String regexEmail = "^([_a-zA-Z0-9-]+)@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{1,6})?$";
+		Pattern patternEmail = Pattern.compile(regexEmail);
+        Matcher matcherEmail = patternEmail.matcher(email);
+        if(matcherEmail.matches()) {
+        	userService.sendEmailForRecoveryOfAccount(email);
+        	return new ResponseEntity<>(HttpStatus.OK);
+		}
+        else {
+        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 	}
-	
-	@PostMapping("/changePassword")
-	public ResponseEntity<?> chandePassword(@RequestBody ChangePassword change) {
+	@RequestMapping(value = "/changePassword" , method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> changePassword(@RequestBody ChangePassword change) {
+		System.out.println(change);
+		String regexEmail = "^([_a-zA-Z0-9-]+)@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{1,6})?$";
+		Pattern patternEmail = Pattern.compile(regexEmail);
+        Matcher matcherEmail = patternEmail.matcher(change.getEmail());
+        
+        String regexPassword = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        Pattern patternPassword = Pattern.compile(regexPassword);
+        Matcher matcherPassword = patternPassword.matcher(change.getNewPass());
+        
+        if(matcherEmail.matches() && matcherPassword.matches() && change.getNewPass().equals(change.getConfirmPass())) {
 		Boolean result = userService.changePassword(change.getEmail(), change.getNewPass());
-		System.out.println(result);
+		if(result==false) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
-
+	else {
+		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);		
+	}	
+	}
 	
 }

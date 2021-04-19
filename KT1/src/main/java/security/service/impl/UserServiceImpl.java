@@ -48,6 +48,8 @@ public class UserServiceImpl implements UserService {
 	public User findOneByEmailAndPassword(String email, String password) {
 		
 		User user = this.userRepository.findOneByEmail(email);
+		if(user == null)
+			return null;
 	
         if (!this.passwordEncoder.matches(password, user.getPassword())) {
            user = null;
@@ -96,7 +98,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Boolean changePassword(String email, String password) {
 		User u = findOneByEmail(email);
-		
+		System.out.println(u);
 		if(u == null) {
 			return false;
 		}
