@@ -90,13 +90,14 @@ $(document).ready(function(e){
       data:obj,
 	  contentType: 'application/json',
 	        success: function(){
+			//PRI USPESNOJ REGISTRACIJI DA SE POSALJE MEJL
+			localStorage.setItem('email', email);
 		  	p_log.text('')
 	        	alert("Check your email to configure your registration.")
 			},
-      error: function(){
-       	p_log.text('User with that email already exists');
-		//alert("Error")
-      }
+		      error: function(){
+		       	p_log.text('User with that email already exists');
+		      }
     });
     
   });

@@ -126,6 +126,39 @@ public class UserServiceImpl implements UserService {
 		u = this.userRepository.save(u);
 		return u;
 	}
+
+	@Override
+	public void sendEmailForConfirmingRegistration(String email) throws MailException, MessagingException {
+		Properties props = new Properties();
+	      props.put("mail.smtp.auth", "true");
+	      props.put("mail.smtp.starttls.enable", "true");
+	      props.put("mail.smtp.host", "smtp.gmail.com");
+	      props.put("mail.smtp.port", "587");
+
+	      Session session = Session.getInstance(props,
+	    	         new javax.mail.Authenticator() {
+	    	            protected PasswordAuthentication getPasswordAuthentication() {
+	    	               return new PasswordAuthentication("ppharmacy98@gmail.com", "Pp123456789p");
+	    	            }
+	    		});
+	//	Session session = Session.getDefaultInstance(System.getProperties());  
+		Message message = new MimeMessage(session);
+		message.setFrom(new InternetAddress("ppharmacy98@gmail.com"));
+		message.setRecipients(Message.RecipientType.TO,
+	              InternetAddress.parse(email));
+
+		   // Set Subject: header field
+		   message.setSubject("Testing Subject");
+
+		   // Send the actual HTML message, as big as you like
+		   message.setContent(
+	              "<a href='"+ "http://localhost:8081/html/changePassword.html" + "'>Change your password</a>",
+	             "text/html");
+
+		   // Send message
+		   Transport.send(message);
+		
+	}
 		
 }
 

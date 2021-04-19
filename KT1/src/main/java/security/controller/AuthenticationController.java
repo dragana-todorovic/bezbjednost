@@ -114,15 +114,37 @@ public class AuthenticationController {
         
 	}
 	@PostMapping("/register")
-	public ResponseEntity<User> addUser(@RequestBody UserRequest userRequest, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<User> addUser(@RequestBody UserRequest userRequest, UriComponentsBuilder ucBuilder) throws MailException, MessagingException {
 		User existUser = this.userService.findOneByEmail(userRequest.getEmail());
+
 		if (existUser != null) {
 			throw new ResourceConflictException(userRequest.getId(), "Username already exists");
+		} 
+		String regexEmail = "^([_a-zA-Z0-9-]+)@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{1,6})?$";
+		Pattern patternEmail = Pattern.compile(regexEmail);
+        Matcher matcherEmail = patternEmail.matcher(userRequest.getEmail());
+        
+        String regexPassword = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        Pattern patternPassword = Pattern.compile(regexPassword);
+        Matcher matcherPassword = patternPassword.matcher(userRequest.getPassword());
+        
+        if(userRequest.getFirstname().equals("") || userRequest.getLastname().equals("") || userRequest.getEmail().equals("") || userRequest.getPassword().equals("")) {
+        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if(matcherEmail.matches() && matcherPassword.matches()) {
+        	//SLANJE MEJLA ZA POTVRDU REGISTRACIJE
+        	userService.sendEmailForConfirmingRegistration(userRequest.getEmail());
+        	return new ResponseEntity<>(HttpStatus.OK);
 		}
-		User user = this.userService.save(userRequest);
+        else {
+        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        //OVO ZAKOMENTARISANO JE CUVANJE U BAZI,TREBALO BI DA SE POZOVE KADA SE KLIKNE 
+        //NA LINK ZA POTVRDU REGISTRACIJE SA MEJLA,NE TREBA DA STOJI OVDE RANIJE JE STAJALO U IF-U
+	/*	User user = this.userService.save(userRequest);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(ucBuilder.path("/api/user/{userId}").buildAndExpand(user.getId()).toUri());
-		return new ResponseEntity<>(user, HttpStatus.CREATED);
+		return new ResponseEntity<>(user, HttpStatus.CREATED);*/
 	}
 
 	
