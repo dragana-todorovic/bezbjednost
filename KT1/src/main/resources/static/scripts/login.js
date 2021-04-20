@@ -5,6 +5,7 @@ var button_login;
 var p_log;
 
 $(document).ready(function(e){
+
   input_email = $('#id_email');
   input_password = $('#id_password');
   var btnLogin = document.getElementById("id_button")

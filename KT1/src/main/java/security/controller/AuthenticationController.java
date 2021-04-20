@@ -84,6 +84,7 @@ public class AuthenticationController {
         if(matcherEmail.matches() && matcherPassword.matches()) {
         User u = userService.findOneByEmailAndPassword(authenticationRequest.getEmail(), authenticationRequest.getPassword());
         if(u==null) {
+        	System.out.println("USAO");
         	return ResponseEntity.notFound().build();
         }
 			/*try {User u = userService.findOneByEmailAndPassword(authenticationRequest.getEmail(), authenticationRequest.getPassword());
@@ -146,8 +147,18 @@ public class AuthenticationController {
 		headers.setLocation(ucBuilder.path("/api/user/{userId}").buildAndExpand(user.getId()).toUri());
 		return new ResponseEntity<>(user, HttpStatus.CREATED);*/
 	}
-
 	
+	@PostMapping("/activateAccount")
+	public ResponseEntity<User> activateAccount(@RequestBody UserRequest userRequest) {
+	
+        //OVO ZAKOMENTARISANO JE CUVANJE U BAZI,TREBALO BI DA SE POZOVE KADA SE KLIKNE 
+        //NA LINK ZA POTVRDU REGISTRACIJE SA MEJLA,NE TREBA DA STOJI OVDE RANIJE JE STAJALO U IF-U
+		User user = this.userService.save(userRequest);
+		//HttpHeaders headers = new HttpHeaders();
+		//headers.setLocation(ucBuilder.path("/api/user/{userId}").buildAndExpand(user.getId()).toUri());
+		return new ResponseEntity<>(user, HttpStatus.CREATED);
+	}
+
 	@GetMapping("/forgotPassword")
 	public ResponseEntity<?> forgotPassword(String email) throws MailException, MessagingException{
 		String regexEmail = "^([_a-zA-Z0-9-]+)@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{1,6})?$";

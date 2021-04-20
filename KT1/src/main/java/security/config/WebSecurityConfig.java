@@ -81,10 +81,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 	.antMatchers("/auth/register").permitAll()
                 	.antMatchers("/auth/forgotPassword/**").permitAll()
                 	.antMatchers("/auth/changePassword").permitAll()
+                	.antMatchers("/auth/activateAccount").permitAll()
                 	.antMatchers("/html/login.html").permitAll()
                 	.antMatchers("/html/homepage.html").permitAll()
                 	.antMatchers("/html/registration.html").permitAll()
-                	.antMatchers("/html/certificates.html").permitAll()
+                
                 	.antMatchers("/").permitAll()
                 	.antMatchers("/images/**").permitAll()
                 	//svaki zahtev mora biti autorizovan
@@ -109,6 +110,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/html/pkiAdmin.html",
                 "/html/forgotPassword.html",
                 "/html/changePassword.html",
+                "/html/activateAccount.html",
+                "/html/certificates*",
                 "/scripts/*",
                 "/css/datetimepicker.css"
             );

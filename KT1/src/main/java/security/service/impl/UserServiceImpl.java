@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
 	              InternetAddress.parse(email));
 
 		   // Set Subject: header field
-		   message.setSubject("Testing Subject");
+		   message.setSubject("Change password");
 
 		   // Send the actual HTML message, as big as you like
 		   message.setContent(
@@ -148,11 +148,11 @@ public class UserServiceImpl implements UserService {
 	              InternetAddress.parse(email));
 
 		   // Set Subject: header field
-		   message.setSubject("Testing Subject");
+		   message.setSubject("Activation");
 
 		   // Send the actual HTML message, as big as you like
 		   message.setContent(
-	              "<a href='"+ "http://localhost:8081/html/changePassword.html" + "'>Change your password</a>",
+	              "<a href='"+ "http://localhost:8081/html/activateAccount.html" + "'>Activate your account!</a>",
 	             "text/html");
 
 		   // Send message

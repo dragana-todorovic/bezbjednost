@@ -91,7 +91,7 @@ $(document).ready(function(e){
 	  contentType: 'application/json',
 	        success: function(){
 			//PRI USPESNOJ REGISTRACIJI DA SE POSALJE MEJL
-			localStorage.setItem('email', email);
+			localStorage.setItem('obj', obj);
 		  	p_log.text('')
 	        	alert("Check your email to configure your registration.")
 			},
@@ -100,7 +100,10 @@ $(document).ready(function(e){
 		      }
     });
     
+   
   });
+  
+  
   
   function validateEmail(email) {
 	    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
