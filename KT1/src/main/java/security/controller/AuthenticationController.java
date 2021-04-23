@@ -121,6 +121,13 @@ public class AuthenticationController {
 		if (existUser != null) {
 			throw new ResourceConflictException(userRequest.getId(), "Username already exists");
 		} 
+		
+		String regexName = "[a-zA-Z]+";
+		Pattern patternName = Pattern.compile(regexName);
+        Matcher matcherFirstName = patternName.matcher(userRequest.getFirstname());
+        Matcher matcherLastName = patternName.matcher(userRequest.getLastname());
+
+		
 		String regexEmail = "^([_a-zA-Z0-9-]+)@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{1,6})?$";
 		Pattern patternEmail = Pattern.compile(regexEmail);
         Matcher matcherEmail = patternEmail.matcher(userRequest.getEmail());
@@ -132,7 +139,7 @@ public class AuthenticationController {
         if(userRequest.getFirstname().equals("") || userRequest.getLastname().equals("") || userRequest.getEmail().equals("") || userRequest.getPassword().equals("")) {
         	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if(matcherEmail.matches() && matcherPassword.matches()) {
+        if(matcherEmail.matches() && matcherPassword.matches() && matcherFirstName.matches() && matcherLastName.matches()) {
         	//SLANJE MEJLA ZA POTVRDU REGISTRACIJE
         	userService.sendEmailForConfirmingRegistration(userRequest.getEmail());
         	return new ResponseEntity<>(HttpStatus.OK);

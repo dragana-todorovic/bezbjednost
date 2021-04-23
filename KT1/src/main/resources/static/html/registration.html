@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
     crossorigin="anonymous">
 
+<taglib uri="http://coverity.com/security" prefix="cov" />
   <script src="../scripts/customAjax.js"></script>
   <script src="../scripts/registration.js"></script> 
 	
@@ -77,11 +78,11 @@
           <label style="color:white;font-weight: bold" >REGISTRATION</label>
 		   <div class="form-group">
           <input type="text" class="form-control form-control-sm not-pass" id="id_first_name" placeholder="First name" autofocus>
-          <p></p>
+          <p id="errorFirstName"></p>
           </div>
           <div class="form-group">
           <input type="text" class="form-control form-control-sm not-pass" id="id_last_name" placeholder="Last name" autofocus>
-          <p></p>
+          <p id="errorLastName"></p>
           </div>
           <div class="form-group">
           <input type="text" class="form-control form-control-sm not-pass" id="id_email" placeholder="Email" autofocus>

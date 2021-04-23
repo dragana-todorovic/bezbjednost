@@ -16,9 +16,43 @@ $(document).ready(function(e){
   input_password_repeat = $('#id_password_repeat');
   var btnRegister = document.getElementById("id_button")
   btnRegister.disabled = true
+
+  input_last_name.keyup(function () {
+	  	if(validateEmail(input_email.val()) && validatePassword(input_password.val()) && validateName(input_first_name.val())  && validateName(input_last_name.val())) {
+	  		btnRegister.disabled = false
+	  	}
+	  	if(!validateName(input_last_name.val())){
+	  		btnRegister.disabled = true
+			$(this).addClass(`alert-danger`);
+	  		$('#id_last_name').css('border-color', 'red');
+	  		$("#errorLastName").text("You can only use letters for first and last name!")
+	  		$('#errorLastName').css('color', 'red');
+	  	}else {
+	  		$(this).removeClass(`alert-danger`);
+	  		$('#id_last_name').css('border-color', '');
+	  		$("#errorLastName").text("")
+	  	}
+  });
+
+  input_first_name.keyup(function () {
+	  	if(validateEmail(input_email.val()) && validatePassword(input_password.val()) && validateName(input_first_name.val())  && validateName(input_last_name.val())) {
+	  		btnRegister.disabled = false
+	  	}
+	  	if(!validateName(input_first_name.val())){
+	  		btnRegister.disabled = true
+			$(this).addClass(`alert-danger`);
+	  		$('#id_first_name').css('border-color', 'red');
+	  		$("#errorFirstName").text("You can only use letters for first and last name!")
+	  		$('#errorFirstName').css('color', 'red');
+	  	}else {
+	  		$(this).removeClass(`alert-danger`);
+	  		$('#id_first_name').css('border-color', '');
+	  		$("#errorFirstName").text("")
+	  	}
+  });
   
   input_email.keyup(function () {
-	  	if(validateEmail(input_email.val()) && validatePassword(input_password.val())) {
+	  	if(validateEmail(input_email.val()) && validatePassword(input_password.val()) && validateName(input_first_name.val()) && validateName(input_last_name.val())) {
 	  		btnRegister.disabled = false
 	  	}
 	  	if(!validateEmail(input_email.val())){
@@ -35,7 +69,7 @@ $(document).ready(function(e){
   });
   
   input_password.keyup(function () {
-	  if(validateEmail(input_email.val()) && validatePassword(input_password.val())) {
+	  if(validateEmail(input_email.val()) && validatePassword(input_password.val()) && validateName(input_first_name.val()) && validateName(input_last_name.val())) {
 	  		btnRegister.disabled = false
 	  	}
 		if(!validatePassword(input_password.val())) {
@@ -77,7 +111,6 @@ $(document).ready(function(e){
 	var last_name=input_last_name.val();
     var email = input_email.val();
     var password = input_password.val();
-	//fali first name i lastname
 	obj = JSON.stringify({
 		firstname:first_name,
 		lastname:last_name,
@@ -90,7 +123,6 @@ $(document).ready(function(e){
       data:obj,
 	  contentType: 'application/json',
 	        success: function(){
-			//PRI USPESNOJ REGISTRACIJI DA SE POSALJE MEJL
 			localStorage.setItem('obj', obj);
 		  	p_log.text('')
 	        	alert("Check your email to configure your registration.")
@@ -103,7 +135,11 @@ $(document).ready(function(e){
    
   });
   
-  
+  //[a-zA-Z]+
+ function validateName(name) {
+	    const re = /[a-zA-Z]+/;
+	    return re.test(String(name));
+}
   
   function validateEmail(email) {
 	    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
