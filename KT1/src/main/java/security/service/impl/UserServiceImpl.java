@@ -18,6 +18,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,13 +46,13 @@ public class UserServiceImpl implements UserService {
 	private AuthorityService authService;
 
 
-	public User findOneByEmailAndPassword(String email, String password) {
+   public User findOneByEmailAndPassword(String email, String password) {
 		
 		User user = this.userRepository.findOneByEmail(email);
 		if(user == null)
 			return null;
 	
-        if (!this.passwordEncoder.matches(password, user.getPassword())) {
+        if (!BCrypt.checkpw(password, user.getPassword())) {
            user = null;
         }
         return user;
@@ -102,19 +103,21 @@ public class UserServiceImpl implements UserService {
 		if(u == null) {
 			return false;
 		}
-		u.setPassword(passwordEncoder.encode(password));
+		u.setPassword(BCrypt.hashpw(password, BCrypt.gensalt(12)));
 		this.userRepository.save(u);
 		return true;
 		
 		
 	}
 
+
 	@Override
 	public User save(UserRequest userRequest) {
 		User u = new User();
 		u.setEmail(userRequest.getEmail());
 		// pre nego sto postavimo lozinku u atribut hesiramo je
-		u.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+		u.setPassword(BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt(12)));
+		//u.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 		u.setFirstName(userRequest.getFirstname());
 		u.setLastName(userRequest.getLastname());
 		u.setEnabled(true);
