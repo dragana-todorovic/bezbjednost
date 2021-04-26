@@ -54,7 +54,7 @@ public class CertificateController {
 	 private CertificateService certificateService;
 
 	@GetMapping("/getAll")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAuthority('show_all_certificates')")
 	public ResponseEntity<List<String>> getAll() {
 		return ResponseEntity.ok(this.certificateService.getAllCertificates());
 	}
@@ -65,21 +65,21 @@ public class CertificateController {
 	}
 	
 	@PostMapping("/pullCertificate/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAuthority('pull_certificate')")
 	public ResponseEntity<?> pull(@PathVariable String id) throws NoSuchProviderException, KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
 		String uid = id.substring(7);
 		this.certificateService.pullCertificate(uid);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	@PostMapping("/checkCertificate/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAuthority('check_certificate')")
 	public ResponseEntity<Boolean> check(@PathVariable String id) throws NoSuchProviderException, KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
 		String uid = id.substring(8);
 		return new ResponseEntity<Boolean>(this.certificateService.checkCertificate(uid),HttpStatus.OK);
 	}
 	
 	@PostMapping("/downloadCertificate/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAuthority('download_certificate')")
 	public ResponseEntity<StringResponse> download(@PathVariable String id) throws NoSuchProviderException, KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
 		String uid = id.substring(11);
 		return new ResponseEntity<StringResponse>(this.certificateService.downloadCertificate(uid),HttpStatus.OK);
@@ -87,7 +87,7 @@ public class CertificateController {
 	
 	
 	@PostMapping("/addCertificate")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAuthority('add_certificate')")
 	public ResponseEntity<?> addCertificate(@RequestBody CertificateForAdding certificate) throws CertIOException, KeyStoreException, NoSuchProviderException, FileNotFoundException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException  {
 		this.certificateService.addCertificate(certificate);
 		return new ResponseEntity<>(HttpStatus.OK);

@@ -1,6 +1,7 @@
 package security.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -96,7 +98,16 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
+    	List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+   	 
+   	 this.authorities.forEach(role -> {
+            grantedAuthorities.add(new SimpleGrantedAuthority(((Authority) role).getName()));
+            ((Authority) role).getPermissions().forEach(permission -> {
+                grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName()));
+            });
+
+        });
+        return grantedAuthorities;
     }
 
     public String getEmail() {

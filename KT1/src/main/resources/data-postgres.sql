@@ -21,3 +21,18 @@ INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (1, 1);
 INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (2, 2);
 INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (3, 2);
 INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (4, 2);
+
+
+INSERT INTO PERMISSION (name) VALUES ('add_certificate');
+INSERT INTO PERMISSION (name) VALUES ('show_all_certificates');
+INSERT INTO PERMISSION (name) VALUES ('pull_certificate');
+INSERT INTO PERMISSION (name) VALUES ('check_certificate');
+INSERT INTO PERMISSION (name) VALUES ('download_certificate');
+
+INSERT INTO AUTHORITY_PERMISSION (authority_id, permission_id) VALUES (2,1);
+INSERT INTO AUTHORITY_PERMISSION (authority_id, permission_id) VALUES (2,2);
+INSERT INTO AUTHORITY_PERMISSION (authority_id, permission_id) VALUES (2,3);
+INSERT INTO AUTHORITY_PERMISSION (authority_id, permission_id) VALUES (2,4);
+INSERT INTO AUTHORITY_PERMISSION (authority_id, permission_id) VALUES (2,5);
+
+

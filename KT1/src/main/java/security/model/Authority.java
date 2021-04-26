@@ -3,6 +3,8 @@ package security.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 // POJO koji implementira Spring Security GrantedAuthority kojim se mogu definisati role u aplikaciji
@@ -19,6 +21,12 @@ public class Authority implements GrantedAuthority {
 
     @Column(name="name")
     String name;
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "authority_permission",
+            joinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
+    private List<Permission> permissions;
 
     @Override
     public String getAuthority() {
@@ -42,5 +50,13 @@ public class Authority implements GrantedAuthority {
     public void setId(Long id) {
         this.id = id;
     }
+
+	public List<Permission> getPermissions() {
+		return permissions;
+	}
+
+	public void setPermissions(List<Permission> permissions) {
+		this.permissions = permissions;
+	}
 
 }
