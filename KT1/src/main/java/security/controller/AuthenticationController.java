@@ -124,6 +124,7 @@ public class AuthenticationController {
 	}
 	@PostMapping("/register")
 	public ResponseEntity<User> addUser(@RequestBody UserRequest userRequest, UriComponentsBuilder ucBuilder) throws MailException, MessagingException {
+		
 		User existUser = this.userService.findOneByEmail(userRequest.getEmail());
 
 		if (existUser != null) {
@@ -143,6 +144,7 @@ public class AuthenticationController {
         String regexPassword = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         Pattern patternPassword = Pattern.compile(regexPassword);
         Matcher matcherPassword = patternPassword.matcher(userRequest.getPassword());
+        System.out.println(matcherPassword.matches());
         
         if(userRequest.getFirstname().equals("") || userRequest.getLastname().equals("") || userRequest.getEmail().equals("") || userRequest.getPassword().equals("")) {
         	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
