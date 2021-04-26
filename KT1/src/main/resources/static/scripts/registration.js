@@ -137,7 +137,7 @@ $(document).ready(function(e){
   
   //[a-zA-Z]+
  function validateName(name) {
-	    const re = /[a-zA-Z]+/;
+	    const re = /^[A-Za-z]+$/;
 	    return re.test(String(name));
 }
   

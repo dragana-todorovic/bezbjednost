@@ -61,6 +61,7 @@ $(document).ready(function(e){
       data: { email: email, password: password },
       success: function(jwt, status, xhr){
 	        if(xhr.status == 200){
+	        	localStorage.setItem('email', email);
 	        localStorage.setItem('jwt', jwt.accessToken);
 	        window.location.href = "/html/certificates.html";
 	

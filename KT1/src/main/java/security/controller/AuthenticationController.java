@@ -7,17 +7,23 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.sql.DataSource;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.bouncycastle.cert.CertIOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,8 +48,10 @@ import javassist.NotFoundException;
 import security.exception.ResourceConflictException;
 import security.model.CertificateForAdding;
 import security.model.ChangePassword;
+import security.model.EmailDTO;
 import security.model.StringResponse;
 import security.model.User;
+import security.model.UserDTO;
 import security.model.UserRequest;
 import security.model.UserTokenState;
 import security.security.TokenUtils;
@@ -122,7 +130,7 @@ public class AuthenticationController {
 			throw new ResourceConflictException(userRequest.getId(), "Username already exists");
 		} 
 		
-		String regexName = "[a-zA-Z]+";
+		String regexName = "/^[A-Za-z]+$/";
 		Pattern patternName = Pattern.compile(regexName);
         Matcher matcherFirstName = patternName.matcher(userRequest.getFirstname());
         Matcher matcherLastName = patternName.matcher(userRequest.getLastname());
@@ -203,4 +211,47 @@ public class AuthenticationController {
 	}	
 	}
 	
+
+	@PostMapping("/prevent")
+	 public UserDTO xssPrevent(@RequestBody EmailDTO emaill) throws SQLException {
+
+		String sql = "select "
+	                + "first_name,last_name,email "
+	                + "from users where email = '"
+	                + emaill.getEmaill()
+	                + "'";
+
+	        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+	        dataSourceBuilder.driverClassName("org.postgresql.Driver");
+	        dataSourceBuilder.url("jdbc:postgresql://localhost:5432/postgres");
+	        dataSourceBuilder.username("postgres");
+	        dataSourceBuilder.password("super");
+	        
+	        DataSource dataSource = dataSourceBuilder.build();
+	        Connection c = dataSource.getConnection();
+	        ResultSet rs = c.createStatement().executeQuery(sql);
+
+	        String firstName = "";
+	        String lastName = "";
+	        String email = "";
+	        int i = 0;
+	        while (rs.next()) {
+	        	System.out.println(i++);
+	            firstName = rs.getString("first_name");
+	            lastName = rs.getString("last_name");
+	            email = rs.getString("email");
+	        }
+
+	        System.out.println(firstName + " lastic  + " + lastName );
+	        firstName = StringEscapeUtils.escapeHtml4(firstName);
+	        lastName = StringEscapeUtils.escapeHtml4(lastName);
+	        email = StringEscapeUtils.escapeHtml4(email);
+
+	        UserDTO u = new UserDTO();
+	        u.setEmail(email);
+	        u.setFirstName(firstName);
+	        u.setLastName(lastName);
+
+	        return u;
+	    }
 }

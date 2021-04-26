@@ -1,5 +1,24 @@
 $(document).ready(function() {
-	
+
+	$(window).on('load', function () {
+		var emaill = localStorage.getItem('email');
+	 
+		obj = JSON.stringify({
+			emaill :emaill});
+		
+	    customAjax({
+	      url: '/auth/prevent',
+	      method: 'POST',
+	      data:obj,
+		  contentType: 'application/json',
+		        success: function(data){
+			        $('#user_content_id').text(data.firstName + " " + data.lastName)
+					},
+			      error: function(){
+			       	console.log('error')
+			      }
+	    });
+	});
 	
 	$('#showAll').on('click', function(e){
 	customAjax({
