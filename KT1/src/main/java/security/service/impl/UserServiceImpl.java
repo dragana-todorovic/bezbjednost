@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
 
 		   // Send the actual HTML message, as big as you like
 		   message.setContent(
-	              "<a href='"+ "http://localhost:8081/html/changePassword.html" + "'>Change your password</a>",
+	              "<a href='"+ "https://localhost:8443/html/changePassword.html" + "'>Change your password</a>",
 	             "text/html");
 
 		   // Send message
@@ -113,21 +113,25 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User save(UserRequest userRequest) {
-		User u = new User();
-		u.setEmail(userRequest.getEmail());
-		// pre nego sto postavimo lozinku u atribut hesiramo je
-		u.setPassword(BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt(12)));
-		//u.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-		u.setFirstName(userRequest.getFirstname());
-		u.setLastName(userRequest.getLastname());
-		u.setEnabled(true);
-		
-		List<Authority> auth = authService.findByname("ROLE_USER");
-		// u primeru se registruju samo obicni korisnici i u skladu sa tim im se i dodeljuje samo rola USER
-		u.setAuthorities(auth);
-		
-		u = this.userRepository.save(u);
+		User user = this.userRepository.findOneByEmail(userRequest.getEmail());
+		if(user ==null) {
+			User u = new User();
+			u.setEmail(userRequest.getEmail());
+			// pre nego sto postavimo lozinku u atribut hesiramo je
+			u.setPassword(BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt(12)));
+			//u.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+			u.setFirstName(userRequest.getFirstname());
+			u.setLastName(userRequest.getLastname());
+			u.setEnabled(true);
+			
+			List<Authority> auth = authService.findByname("ROLE_USER");
+			// u primeru se registruju samo obicni korisnici i u skladu sa tim im se i dodeljuje samo rola USER
+			u.setAuthorities(auth);
+			
+			u = this.userRepository.save(u);
 		return u;
+		}
+		return null;
 	}
 
 	@Override
@@ -155,7 +159,7 @@ public class UserServiceImpl implements UserService {
 
 		   // Send the actual HTML message, as big as you like
 		   message.setContent(
-	              "<a href='"+ "http://localhost:8081/html/activateAccount.html" + "'>Activate your account!</a>",
+	              "<a href='"+ "https://localhost:8443/html/activateAccount.html" + "'>Activate your account!</a>",
 	             "text/html");
 
 		   // Send message

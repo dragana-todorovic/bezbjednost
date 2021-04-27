@@ -126,6 +126,7 @@ $(document).ready(function(e){
 			localStorage.setItem('obj', obj);
 		  	p_log.text('')
 	        	alert("Check your email to configure your registration.")
+	        	setInterval(timer, 60000);
 			},
 		      error: function(){
 		       	p_log.text('User with that email already exists');
@@ -164,5 +165,10 @@ $(document).ready(function(e){
            replace(/<![\s\S]*?--[ \t\n\r]*>/gi, '');
       return output;
   };
+  
+
+	function timer() {
+	  localStorage.removeItem('obj')
+	}
 
 });

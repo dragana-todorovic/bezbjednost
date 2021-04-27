@@ -131,7 +131,7 @@ public class AuthenticationController {
 			throw new ResourceConflictException(userRequest.getId(), "Username already exists");
 		} 
 		
-		String regexName = "/^[A-Za-z]+$/";
+		String regexName = "[a-zA-Z]+\\.?";
 		Pattern patternName = Pattern.compile(regexName);
         Matcher matcherFirstName = patternName.matcher(userRequest.getFirstname());
         Matcher matcherLastName = patternName.matcher(userRequest.getLastname());
@@ -144,19 +144,21 @@ public class AuthenticationController {
         String regexPassword = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         Pattern patternPassword = Pattern.compile(regexPassword);
         Matcher matcherPassword = patternPassword.matcher(userRequest.getPassword());
-        System.out.println(matcherPassword.matches());
-        
+        System.out.println(matcherEmail.matches() + "#" + matcherPassword.matches() + "#" + matcherFirstName.matches() + "#" + matcherLastName.matches());
         if(userRequest.getFirstname().equals("") || userRequest.getLastname().equals("") || userRequest.getEmail().equals("") || userRequest.getPassword().equals("")) {
         	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         if(matcherEmail.matches() && matcherPassword.matches() && matcherFirstName.matches() && matcherLastName.matches()) {
+        	System.out.println("USAO U TRUE");
         	//SLANJE MEJLA ZA POTVRDU REGISTRACIJE
         	userService.sendEmailForConfirmingRegistration(userRequest.getEmail());
         	return new ResponseEntity<>(HttpStatus.OK);
 		}
         else {
+        	System.out.println(matcherEmail.matches() + "#" + matcherPassword.matches() + "#" + matcherFirstName.matches() + "#" + matcherLastName.matches());
         	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        
         //OVO ZAKOMENTARISANO JE CUVANJE U BAZI,TREBALO BI DA SE POZOVE KADA SE KLIKNE 
         //NA LINK ZA POTVRDU REGISTRACIJE SA MEJLA,NE TREBA DA STOJI OVDE RANIJE JE STAJALO U IF-U
 	/*	User user = this.userService.save(userRequest);
@@ -171,9 +173,13 @@ public class AuthenticationController {
         //OVO ZAKOMENTARISANO JE CUVANJE U BAZI,TREBALO BI DA SE POZOVE KADA SE KLIKNE 
         //NA LINK ZA POTVRDU REGISTRACIJE SA MEJLA,NE TREBA DA STOJI OVDE RANIJE JE STAJALO U IF-U
 		User user = this.userService.save(userRequest);
+		if(user !=null) {
 		//HttpHeaders headers = new HttpHeaders();
 		//headers.setLocation(ucBuilder.path("/api/user/{userId}").buildAndExpand(user.getId()).toUri());
 		return new ResponseEntity<>(user, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@GetMapping("/forgotPassword")

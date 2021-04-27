@@ -7,10 +7,16 @@ $(document).ready(function(){
 		      data:localStorage.getItem('obj'),
 			  contentType: 'application/json',
 			        success: function(){
-			        	alert("Success registration!")
+			        		localStorage.removeItem('obj')
+			        		alert("Success registration!")
+
 					},
 				      error: function(){
-				       	p_log.text('User with that email already exists');
+				    	  if(localStorage.getItem('obj') == null) {
+				    		  $('#id_p_log').text('Validation link expired. Try again!')
+				        	} else {
+				        		alert('User with that email already exists')
+				        	}
 				      }
 		    });
 	    });
