@@ -75,12 +75,12 @@ public class UserServiceImpl implements UserService {
 	      Session session = Session.getInstance(props,
 	    	         new javax.mail.Authenticator() {
 	    	            protected PasswordAuthentication getPasswordAuthentication() {
-	    	               return new PasswordAuthentication("ppharmacy98@gmail.com", "Pp123456789p");
+	    	               return new PasswordAuthentication("notificationsnotifications22@gmail.com", "Admin123#");
 	    	            }
 	    		});
 	//	Session session = Session.getDefaultInstance(System.getProperties());  
 		Message message = new MimeMessage(session);
-		message.setFrom(new InternetAddress("ppharmacy98@gmail.com"));
+		message.setFrom(new InternetAddress("notificationsnotifications22@gmail.com"));
 		message.setRecipients(Message.RecipientType.TO,
 	              InternetAddress.parse(email));
 
@@ -145,12 +145,12 @@ public class UserServiceImpl implements UserService {
 	      Session session = Session.getInstance(props,
 	    	         new javax.mail.Authenticator() {
 	    	            protected PasswordAuthentication getPasswordAuthentication() {
-	    	               return new PasswordAuthentication("ppharmacy98@gmail.com", "Pp123456789p");
+	    	               return new PasswordAuthentication("notificationsnotifications22@gmail.com", "Admin123#");
 	    	            }
 	    		});
 	//	Session session = Session.getDefaultInstance(System.getProperties());  
 		Message message = new MimeMessage(session);
-		message.setFrom(new InternetAddress("ppharmacy98@gmail.com"));
+		message.setFrom(new InternetAddress("notificationsnotifications22@gmail.com"));
 		message.setRecipients(Message.RecipientType.TO,
 	              InternetAddress.parse(email));
 

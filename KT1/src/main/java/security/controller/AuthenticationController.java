@@ -144,12 +144,11 @@ public class AuthenticationController {
         String regexPassword = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         Pattern patternPassword = Pattern.compile(regexPassword);
         Matcher matcherPassword = patternPassword.matcher(userRequest.getPassword());
-        System.out.println(matcherEmail.matches() + "#" + matcherPassword.matches() + "#" + matcherFirstName.matches() + "#" + matcherLastName.matches());
+       
         if(userRequest.getFirstname().equals("") || userRequest.getLastname().equals("") || userRequest.getEmail().equals("") || userRequest.getPassword().equals("")) {
         	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         if(matcherEmail.matches() && matcherPassword.matches() && matcherFirstName.matches() && matcherLastName.matches()) {
-        	System.out.println("USAO U TRUE");
         	//SLANJE MEJLA ZA POTVRDU REGISTRACIJE
         	userService.sendEmailForConfirmingRegistration(userRequest.getEmail());
         	return new ResponseEntity<>(HttpStatus.OK);
